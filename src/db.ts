@@ -1,4 +1,5 @@
-import Task from "./sequelize-models";
+//import { Task } from "./sequelize-models";
+const { Task } = require("./sequelize-models.ts");
 import { ITask } from "./api";
 
 export const fetchTasks = async () => {
