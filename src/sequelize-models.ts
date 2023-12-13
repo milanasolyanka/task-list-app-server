@@ -1,6 +1,4 @@
 import sequelize from "./sequelize-config";
-//import { Model, DataTypes } from "sequelize";
-//const { sequelize } = require("./sequelize-config.ts");
 const { Model, DataTypes } = require("sequelize");
 
 // CREATE TABLE IF NOT EXISTS task (
@@ -8,37 +6,30 @@ const { Model, DataTypes } = require("sequelize");
 //   taskText VARCHAR(255) NOT NULL,
 //   isDone BOOLEAN DEFAULT false
 // );
+// CREATE TABLE IF NOT EXISTS users (
+//   email VARCHAR(100) PRIMARY KEY NOT NULL,
+//   password VARCHAR(100) NOT NULL
+// );
 
-/*class Task extends Model 
-{
-  declare id: number;
-  declare taskText: string;
-  declare isDone: boolean;
-}
-
-Task.init(
+export const User = sequelize.define(
+  "user",
   {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
+    email: {
+      type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
     },
-    taskText: {
+    password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    isDone: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
   },
   {
-    sequelize,
-    modelName: "Task",
-    tableName: "tasks",
+    modelName: "User",
+    tableName: "users",
     timestamps: false,
   }
-); */
+);
 
 export const Task = sequelize.define(
   "Task",
@@ -58,7 +49,6 @@ export const Task = sequelize.define(
     },
   },
   {
-    
     modelName: "Task",
     tableName: "tasks",
     timestamps: false,
@@ -66,8 +56,3 @@ export const Task = sequelize.define(
 );
 
 export default Task;
-
-// module.exports = {
-//   Task,
-//   sequelize,
-// };

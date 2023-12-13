@@ -16,8 +16,6 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
-let tasks: ITask[] = [];
-
 app.get("/tasks", async (req: Request, res: Response) => {
   try {
     const tasks = await fetchTasks();
@@ -31,7 +29,6 @@ app.get("/tasks", async (req: Request, res: Response) => {
 app.post("/tasks", async (req: Request, res: Response) => {
   console.log(req.body);
   try {
-    
     const newTaskData: ITask = req.body;
     const createdTask = await createTask(newTaskData);
     res.json(createdTask);
@@ -74,6 +71,63 @@ app.delete("/tasks/:id", async (req, res) => {
     console.error("Error deleting task:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
+});
+
+require("dotenv").config();
+import { User } from "./sequelize-models";
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
+const salt = "$2b$10$3HVhKA2xxrCTEm4BKZ5oM.";
+
+app.post("/login", (request, response) => {
+  console.log(request.body);
+  User.findOne({ where: { email: request.body.email } })
+    .then((data: any) => {
+      if (data === null) {
+        response.status(404).send("Пользователь не найден");
+      } else {
+        const isRight = bcrypt.compareSync(
+          request.body.password,
+          data.password
+        );
+        if (isRight) {
+          const token = jwt.sign(
+            { email: request.body.email },
+            process.env.JWT_KEY
+          );
+          response.json({ token, email: request.body.email });
+        } else {
+          response.status(401).send("Неверный пароль");
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Ошибка входа:", error);
+      response.status(500).send("Ошибка сервера при входе");
+    });
+});
+
+app.post("/registration", (request, response) => {
+  User.findOne({ where: { email: request.body.email } })
+    .then((data: any) => {
+      if (data === null) {
+        const hashedPassword = bcrypt.hashSync(request.body.password, salt);
+        User.create({
+          email: request.body.email,
+          password: hashedPassword,
+        }).then((user: any) => {
+          const token = jwt.sign({ email: user.email }, process.env.JWT_KEY);
+          response.json({ token, email: user.email });
+        });
+      } else {
+        response.status(409).send("Пользователь уже существует");
+      }
+    })
+    .catch((error) => {
+      console.error("Ошибка регистрации:", error);
+      response.status(500).send("Ошибка сервера при регистрации");
+    });
 });
 
 app.listen(port, () => {

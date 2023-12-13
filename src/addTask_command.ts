@@ -1,6 +1,7 @@
-//const { Task } = require("./sequelize-models.ts");
 import Task from "./sequelize-models";
 const commander = require("commander");
+
+//npx ts-node addTask_command.ts clear_database
 
 commander
   .command("clear_database")
