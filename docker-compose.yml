@@ -1,0 +1,42 @@
+version: "3"
+services:
+  db:
+    image: mysql:8.1.0
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      #MYSQL_ROOT_PASSWORD: admin
+      #MYSQL_DATABASE: task_list_database
+    #volumes:
+    #  - ./mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  server:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   # target: server-builder
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      # target: server-builder
+    container_name: server_container
+    volumes:
+      - ../:/var/www/app/
+      - /var/www/app/node_modules
+    ports:
+      - "3001:3001" # Node.js server port
+    #depends_on:
+    #  - db
+
+  # websocket:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: websocket-builder
+  #   container_name: websocket_container
+  #   ports:
+  #     - "3002:3002" # websocket server port
+  #depends_on:
+  #  - server
